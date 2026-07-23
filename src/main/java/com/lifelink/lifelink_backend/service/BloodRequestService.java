@@ -4,8 +4,6 @@ import com.lifelink.lifelink_backend.entity.BloodRequest;
 import com.lifelink.lifelink_backend.repository.BloodRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.lifelink.lifelink_backend.entity.BloodInventory;
-import com.lifelink.lifelink_backend.repository.BloodInventoryRepository;
 
 import java.util.List;
 
@@ -15,53 +13,36 @@ public class BloodRequestService {
     @Autowired
     private BloodRequestRepository bloodRequestRepository;
 
-    public BloodRequest saveBloodRequest(BloodRequest bloodRequest) {
-        return bloodRequestRepository.save(bloodRequest);
+    // Create a new blood request
+    public BloodRequest createRequest(BloodRequest request, String email) {
+
+        request.setRequestedBy(email);
+        request.setStatus("PENDING");
+
+        return bloodRequestRepository.save(request);
     }
 
-    public List<BloodRequest> getAllBloodRequests() {
+    // Get all blood requests
+    public List<BloodRequest> getAllRequests() {
         return bloodRequestRepository.findAll();
     }
 
-    public BloodRequest getBloodRequestById(Long id) {
-        return bloodRequestRepository.findById(id).orElse(null);
+    // Get requests created by logged-in user
+    public List<BloodRequest> getMyRequests(String email) {
+        return bloodRequestRepository.findByRequestedBy(email);
     }
 
-    public void deleteBloodRequest(Long id) {
+    // Get request by ID
+    public BloodRequest getRequestById(Long id) {
+        return bloodRequestRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Blood Request Not Found"));
+    }
+
+    // Delete request
+    public String deleteRequest(Long id) {
+
         bloodRequestRepository.deleteById(id);
-    }
 
-    @Autowired
-    private BloodInventoryRepository bloodInventoryRepository;
-
-    public String approveRequest(Long requestId) {
-
-        BloodRequest request = bloodRequestRepository.findById(requestId).orElse(null);
-
-        if (request == null) {
-            return "Blood Request Not Found";
-        }
-
-        BloodInventory inventory = bloodInventoryRepository
-                .findByBloodGroup(request.getBloodGroup())
-                .orElse(null);
-
-        if (inventory == null) {
-            return "Blood Group Not Available";
-        }
-
-        if (inventory.getUnitsAvailable() < request.getUnitsRequired()) {
-            return "Insufficient Blood Units";
-        }
-
-        inventory.setUnitsAvailable(
-                inventory.getUnitsAvailable() - request.getUnitsRequired());
-
-        bloodInventoryRepository.save(inventory);
-
-        request.setStatus("Approved");
-        bloodRequestRepository.save(request);
-
-        return "Blood Request Approved Successfully";
+        return "Blood Request Deleted Successfully";
     }
 }
