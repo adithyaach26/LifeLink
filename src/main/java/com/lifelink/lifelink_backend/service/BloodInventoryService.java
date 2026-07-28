@@ -13,24 +13,41 @@ public class BloodInventoryService {
     @Autowired
     private BloodInventoryRepository bloodInventoryRepository;
 
-    // Add blood inventory
-    public BloodInventory saveBloodInventory(BloodInventory inventory) {
+    // Add or Update Blood Stock
+    public BloodInventory addBloodStock(BloodInventory inventory) {
+
+        BloodInventory existingInventory =
+                bloodInventoryRepository.findByBloodGroup(inventory.getBloodGroup())
+                        .orElse(null);
+
+        if (existingInventory != null) {
+
+            Integer currentUnits = existingInventory.getAvailableUnits();
+
+            if (currentUnits == null) {
+                currentUnits = 0;
+            }
+
+            existingInventory.setAvailableUnits(
+                    currentUnits + inventory.getAvailableUnits()
+            );
+
+            return bloodInventoryRepository.save(existingInventory);
+        }
+
         return bloodInventoryRepository.save(inventory);
     }
 
-    // Get all inventory
+    // View All Inventory
     public List<BloodInventory> getAllInventory() {
         return bloodInventoryRepository.findAll();
     }
 
-    // Find inventory by blood group
-    public BloodInventory getInventoryByBloodGroup(String bloodGroup) {
-        return bloodInventoryRepository.findByBloodGroup(bloodGroup)
-                .orElse(null);
-    }
+    // Search by Blood Group
+    public BloodInventory getByBloodGroup(String bloodGroup) {
 
-    // Delete inventory
-    public void deleteInventory(Long id) {
-        bloodInventoryRepository.deleteById(id);
+        return bloodInventoryRepository.findByBloodGroup(bloodGroup)
+                .orElseThrow(() ->
+                        new RuntimeException("Blood Group Not Found"));
     }
 }

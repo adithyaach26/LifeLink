@@ -14,28 +14,21 @@ public class BloodInventoryController {
     @Autowired
     private BloodInventoryService bloodInventoryService;
 
-    // Add blood inventory
+    // Add or Update Blood Stock
     @PostMapping
-    public BloodInventory addInventory(@RequestBody BloodInventory inventory) {
-        return bloodInventoryService.saveBloodInventory(inventory);
+    public BloodInventory addBloodStock(@RequestBody BloodInventory inventory) {
+        return bloodInventoryService.addBloodStock(inventory);
     }
 
-    // Get all inventory
+    // View All Blood Inventory
     @GetMapping
     public List<BloodInventory> getAllInventory() {
         return bloodInventoryService.getAllInventory();
     }
 
-    // Get inventory by blood group
+    // Search Blood Group
     @GetMapping("/{bloodGroup}")
-    public BloodInventory getInventory(@PathVariable String bloodGroup) {
-        return bloodInventoryService.getInventoryByBloodGroup(bloodGroup);
-    }
-
-    // Delete inventory
-    @DeleteMapping("/{id}")
-    public String deleteInventory(@PathVariable Long id) {
-        bloodInventoryService.deleteInventory(id);
-        return "Inventory Deleted Successfully";
+    public BloodInventory getBloodGroup(@PathVariable String bloodGroup) {
+        return bloodInventoryService.getByBloodGroup(bloodGroup);
     }
 }

@@ -10,9 +10,10 @@ public class BloodInventory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String bloodGroup;
 
-    private int unitsAvailable;
+    private Integer availableUnits;
 
     public BloodInventory() {
     }
@@ -25,19 +26,19 @@ public class BloodInventory {
         return bloodGroup;
     }
 
-    public void setBloodGroup(String bloodGroup) {
-        this.bloodGroup = bloodGroup;
-    }
-
-    public int getUnitsAvailable() {
-        return unitsAvailable;
-    }
-
-    public void setUnitsAvailable(int unitsAvailable) {
-        this.unitsAvailable = unitsAvailable;
+    public Integer getAvailableUnits() {
+        return availableUnits;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setBloodGroup(String bloodGroup) {
+        this.bloodGroup = bloodGroup;
+    }
+
+    public void setAvailableUnits(Integer availableUnits) {
+        this.availableUnits = availableUnits;
     }
 }
